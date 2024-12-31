@@ -41,6 +41,7 @@ EOF
     echo "A new config.json has been created."
 }
 
+
 # Function to configure the installation
 configure_installation() {
     echo "Select the installation type:"
@@ -113,11 +114,43 @@ env_generation() {
         sed -i "s/^ENABLE_WATCHTOWER=.*/ENABLE_WATCHTOWER=0/" "$ENV_FILE"
     fi
     if [[ "$PROTOCOL" != "https" ]]; then
-        sed -i "s/^CORE_AUTHCOOKIE_SECURE=.*/ENABLE_WATCHTOWER=false/" "$ENV_FILE"
+        sed -i "s/^CORE_AUTHCOOKIE_SECURE=.*/CORE_AUTHCOOKIE_SECURE=false/" "$ENV_FILE"
     else
-        sed -i "s/^CORE_AUTHCOOKIE_SECURE=.*/ENABLE_WATCHTOWER=true/" "$ENV_FILE"
+        sed -i "s/^CORE_AUTHCOOKIE_SECURE=.*/CORE_AUTHCOOKIE_SECURE=true/" "$ENV_FILE"
     fi
 
+}
+
+runtime_generation() {
+    cat <<EOF > "runtime-config.js"
+window.runConfig = {
+  apiBaseUrl: 'http://$IP:8080/api',
+  socketUrl: 'http://$IP:9092/'
+}
+EOF
+}
+
+download_files() {
+    # Base URL of the repository
+    REPO_URL="https://raw.githubusercontent.com/Arcan-Tech/impact-installation-script/master/"
+
+    # Paths to the files to download
+    FILE1="docker-compose.yaml"
+    FILE2=".base.env"
+
+    OUTPUT_DIR="."
+
+    wget -q "${REPO_URL}/${FILE1}" -O "${OUTPUT_DIR}/$(basename "$FILE1")"
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to download $FILE1"
+        return 1
+    fi
+
+    wget -q "${REPO_URL}/${FILE2}" -O "${OUTPUT_DIR}/$(basename "$FILE2")"
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to download $FILE2"
+        return 1
+    fi
 }
 
 
@@ -142,16 +175,15 @@ else
     create_config_json
 fi
 
-# Configure installation
 configure_installation
+
+download_files
 
 env_generation
 
-# TODO: runtime generation
+runtime_generation
 
-docker compose run watchtower --run-once
-
-#TODO: pull via watchtower
+# docker compose --config "./config.json" pull
 
 # Finalization
 echo "Installation completed!"
