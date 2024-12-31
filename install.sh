@@ -153,6 +153,33 @@ download_files() {
     fi
 }
 
+replace_passwords_in_env() {
+    local env_file=".env"
+
+    if [[ ! -f "$env_file" ]]; then
+        echo "Error: $env_file not found."
+        return 1
+    fi
+
+    # Backup the original .env file
+    cp "$env_file" "${env_file}.bak"
+    echo "Backup of .env created as ${env_file}.bak"
+
+    # Generate and replace all variables ending in PASSWORD
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*PASSWORD= ]]; then
+            # Extract variable name
+            var_name=$(echo "$line" | cut -d '=' -f 1)
+            
+            # Generate a random alphanumeric string (16 characters)
+            new_value=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 16)
+            
+            # Replace the variable in the .env file
+            sed -i "s|^$var_name=.*|$var_name=$new_value|" "$env_file"
+        fi
+    done < "$env_file"
+}
+
 
 # Script start
 echo "This script will install the application using Docker."
@@ -180,6 +207,8 @@ configure_installation
 download_files
 
 env_generation
+
+replace_passwords_in_env
 
 runtime_generation
 
