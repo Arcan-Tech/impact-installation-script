@@ -130,21 +130,28 @@ EOF
 
 download_files() {
     REPO_URL="https://raw.githubusercontent.com/Arcan-Tech/impact-installation-script/master/"
-    FILE1="docker-compose.yaml"
-    FILE2=".base.env"
+    FILE_DOCKER_COMPOSE="docker-compose.yaml"
+    FILE_BASE_ENV=".base.env"
+    FILE_SCHEMA="schema.sql"
 
     OUTPUT_DIR="."
 
-    echo "Fetching latest $FILE1 and $FILE2"
-    wget -q "${REPO_URL}/${FILE1}" -O "${OUTPUT_DIR}/$(basename "$FILE1")"
+    echo "Fetching required files"
+    wget -q "${REPO_URL}/${FILE_DOCKER_COMPOSE}" -O "${OUTPUT_DIR}/$(basename "$FILE_DOCKER_COMPOSE")"
     if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to download $FILE1"
+        echo "Error: Failed to download $FILE_DOCKER_COMPOSE"
         return 1
     fi
 
-    wget -q "${REPO_URL}/${FILE2}" -O "${OUTPUT_DIR}/$(basename "$FILE2")"
+    wget -q "${REPO_URL}/${FILE_BASE_ENV}" -O "${OUTPUT_DIR}/$(basename "$FILE_BASE_ENV")"
     if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to download $FILE2"
+        echo "Error: Failed to download $FILE_BASE_ENV"
+        return 1
+    fi
+
+    wget -q "${REPO_URL}/${FILE_SCHEMA}" -O "${OUTPUT_DIR}/$(basename "$FILE_SCHEMA")"
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to download $FILE_SCHEMA"
         return 1
     fi
 }
