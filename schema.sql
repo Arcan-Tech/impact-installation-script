@@ -290,8 +290,3 @@ CREATE TABLE diffs_v1 (
     "when" TIMESTAMP NOT NULL
 );
 
--- SELECT create_hypertable('public.datasets_v1', 'windex', chunk_time_interval => 1);
-
-INSERT INTO public.impact_user (id, username, password, email)
-VALUES (1, 'dev', '$2a$10$D3HgetPAUcKQosjmeP8C3OsvV65xVwgZEYlj6JmMmsz.Do.1uiC3q', '');
-
