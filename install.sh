@@ -14,10 +14,24 @@ echo -e "
 
 # Function to check if Docker is installed and running
 check_docker() {
-    if ! docker -v &>/dev/null; then
+    if ! command -v docker &>/dev/null; then
         echo "Docker is not installed or not in PATH. Please install Docker to proceed."
         exit 1
     fi
+
+    if ! docker info &>/dev/null; then
+        echo "Docker is installed but the service is not running. Please start Docker and try again."
+        exit 1
+    fi
+}
+
+check_dependencies() {
+    for cmd in wget sed base64; do
+        if ! command -v "$cmd" &>/dev/null; then
+            echo "Error: $cmd is not installed. Please install it to proceed."
+            exit 1
+        fi
+    done
 }
 
 CONFIG_FILE="./docker-conf/config.json"
@@ -29,8 +43,7 @@ create_config_json() {
     echo
 
     ENCODED_AUTH=$(echo -n "username:${GITHUB_TOKEN}" | base64)
-
-    # Crea il file config.json
+    mkdir -p "$(dirname "$CONFIG_FILE")"
     cat >"$CONFIG_FILE" <<EOF
 {
     "auths": {
@@ -133,6 +146,7 @@ download_files() {
     FILE_DOCKER_COMPOSE="docker-compose.yaml"
     FILE_BASE_ENV=".base.env"
     FILE_SCHEMA="schema.sql"
+    FILE_RUN="run-impact.sh"
 
     OUTPUT_DIR="."
 
@@ -154,6 +168,12 @@ download_files() {
         echo "Error: Failed to download $FILE_SCHEMA"
         return 1
     fi
+
+    wget -q "${REPO_URL}/${FILE_RUN}" -O "${OUTPUT_DIR}/$(basename "$FILE_RUN")"
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to download $FILE_RUN"
+        return 1
+    fi
 }
 
 replace_passwords_in_env() {
@@ -166,7 +186,7 @@ replace_passwords_in_env() {
 
     # Backup the original .env file
     cp "$env_file" "${env_file}.bak"
-    echo "Previous .env saved as as ${env_file}.bak"
+    echo "Previous .env saved as ${env_file}.bak"
 
     # Generate and replace all variables ending in PASSWORD
     while IFS= read -r line; do
@@ -178,6 +198,9 @@ replace_passwords_in_env() {
     done <"$env_file"
 }
 
+
+### Installation workflow
+
 echo "This script will install the application using Docker."
 echo "Make sure you have Docker installed and running."
 read -p "Do you want to proceed? [y/n]: " PROCEED
@@ -187,6 +210,7 @@ if [[ "$PROCEED" != "y" ]]; then
 fi
 
 check_docker
+check_dependencies
 
 if [ -f "$CONFIG_FILE" ]; then
     echo "A config.json file was found. Using existing credentials."
