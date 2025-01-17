@@ -85,6 +85,7 @@ To perform a local analysis:
    > If your repository is named `my-repo`, clone it into the `./repos` directory:  
    > `git clone https://github.com/user/my-repo ./repos/my-repo`.
 3. Ensure the branches to analyzed have been fetched, add those you wish to analyze
+4. When telling the dashboard where to find the repository, use `/repos/<my-repo` (NOTE: the absence of the dot at the beginning).
 
 ### Remote analysis
 
