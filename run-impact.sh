@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker --config ./docker-conf compose up
+docker --config ./docker-conf compose up $@
