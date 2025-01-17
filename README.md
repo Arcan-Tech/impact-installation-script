@@ -50,7 +50,8 @@ At the current state the express option it is the fastest option to install and 
 The custom option will prompt with the following settings:
 
 - Version: At the current state is only possible to use latest or snapshot. Latest is the most recent stable version of the tool, the snapshot is the most recent unstable.
-- Protocol: If you wish to serve the application only over HTTPS you can set HTTPS, otherwise use HTTP
+- Protocol: If you wish to serve the application only over HTTPS you can set HTTPS, otherwise use HTTP. Choosing HTTPS will make the application accepts credentials with HTTPS
+  > **_Warning:_** In order to use HTTPS the host's machine must be configured to do so
 - Auto updater: Enable this to automatically update images every 2 hours, if valid credentials are available.
   > **_Warning:_** Using the auto-updater with the snapshot version may compromise your deployed application and data
 - Repository directory: Specify the path to local repositories on your machine. Ensure the path is correct; otherwise, local analysis will fail.
@@ -60,7 +61,7 @@ Before completing the configuration you will be showed a summary and you will be
 
 ## Launch the tool
 
-Once the installation is completed you should see a message saying so and the address where you can access the tool. It should be < protocol you set >://< IP you set >:3000, e.g. http://192.168.1.8:3000
+Once the installation is completed you should see a message saying so and the address where you can access the tool. It should be < protocol you set >://< IP you set >:3000, e.g. http://192.168.1.8:3000 or in the cose of express installation http://localhost:3000
 
 you can launch the tool with `./run-impact.sh`, once all the containers have launched you can access the tool
 
@@ -70,7 +71,7 @@ you can launch the tool with `./run-impact.sh`, once all the containers have lau
 
 - When you first launch the tool, no users will exist. You must create a user account.
 - User accounts are only used to associate projects and repositories.
-  > **Note:** Password recovery is not implemented, so keep your credentials secure.
+  > **Note:** Password recovery is not implemented, so keep your credentials secure. The user is limited to the running instance
 
 ### Local analysis
 
