@@ -1,4 +1,4 @@
-name: impact-analysis-snapshot
+name: impact-analysis
 
 services:
   nats:
@@ -35,7 +35,7 @@ services:
       retries: 5
 
   postgres:
-    image: postgres:14-alpine
+    image: postgres:14-alpine # timescale/timescaledb:latest-pg14
     container_name: ${POSTGRES_HOST}
     ports:
       - ${POSTGRES_PORT}:5432
@@ -53,37 +53,49 @@ services:
       timeout: 5s
       retries: 5
 
-  orientdb:
-    image: orientdb:3.2.36
-    container_name: ${ORIENT_DB_CONTAINER}
-    environment:
-      ORIENTDB_ROOT_USER: ${ORIENT_DB_USER}
-      ORIENTDB_ROOT_PASSWORD: ${ORIENT_DB_PASSWORD}
-    healthcheck:
-      test: ['CMD', 'curl', '--fail', 'http://localhost:2480/listDatabases']
-      interval: 30s
-      timeout: 10s
+  neo4j:
+    image: neo4j:5.26
+    container_name: neo4j
     ports:
-      # - 2480:2480
-      - 2424:2424
+      - '7474:7474'
+      - '7687:7687'
+    environment:
+      NEO4J_AUTH: '${NEO4J_AUTH}'
+      NEO4J_PLUGINS: '["apoc", "apoc-extended"]'
+      NEO4J_apoc_export_file_enabled: 'true'
+      NEO4J_apoc_import_file_enabled: 'true'
+      NEO4J_apoc_import_file_use__neo4j__config: 'true'
+      NEO4J_dbms_security_procedures_unrestricted: 'apoc.*'
+      #NEO4J_apoc_initializer_neo4j_0: "CREATE CONSTRAINT person_name_unique IF NOT EXISTS FOR (p:Person) REQUIRE p.name IS UNIQUE"
+      #NEO4J_apoc_initializer_neo4j_1: "CREATE (:Person {name:'Alice'})"
+      #NEO4J_apoc_initializer_neo4j_2: "CREATE (:Person {name:'Bob'})"
+      NEO4J_apoc_initializer_neo4j_cypher_0: "CALL apoc.cypher.runSchemaFile('file:///init.cypher')"
+      NEO4J_apoc_initializer_neo4j_cypher_1: "CALL apoc.cypher.runFile ('file:///sample.cypher')"
     volumes:
-      - orient_data_volume:/orientdb/databases
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/import
+      - neo4j_plugins:/plugins
+      - ./init.cypher:/import/init.cypher
+      - ./sample.cypher:/import/sample.cypher
 
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - .docker-conf/config.json:/config.json
-    command: ["--interval", "7200", "--cleanup", "--label-enable"]
+      - ./config.json:/config.json
+    command: ['--interval', '7200', '--cleanup', '--label-enable']
     deploy:
-      replicas: ${ENABLE_WATCHTOWER:-0}
+      replicas: ${ENABLE_WATCHTOWER}
 
   core:
     pull_policy: always
     image: ${CORE_IMAGE}:${CORE_TAG}
     networks: ['impact-analysis']
     depends_on: ['nats', 'postgres']
+    restart: always
     container_name: ${CORE_CONTAINER_NAME}
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
@@ -108,6 +120,7 @@ services:
     container_name: ${PREDICTION_CONTAINER_NAME}
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
+    restart: always
     ports:
       - '${PREDICTION_PORT}:8282'
     env_file:
@@ -124,6 +137,7 @@ services:
     volumes:
       - ./runtime-config.js:/usr/share/nginx/html/runtime-config.js
     networks: ['impact-analysis']
+    restart: always
     depends_on: ['core']
     ports:
       - 3000:8080
@@ -144,7 +158,7 @@ services:
     ports:
       - '${MINER_API_PORT}:8181'
     networks: ['impact-analysis']
-    depends_on: ['core', 'orientdb']
+    depends_on: ['core', 'neo4j']
     volumes:
       - ${USER_VOLUME}:${REPOSITORY_VOLUME}
 
@@ -157,7 +171,7 @@ services:
     env_file:
       - ${ENV_FILE}
     networks: ['impact-analysis']
-    depends_on: ['core', 'orientdb']
+    depends_on: ['core', 'neo4j']
     volumes:
       - ${USER_VOLUME}:${REPOSITORY_VOLUME}
 
@@ -167,4 +181,8 @@ networks:
 
 volumes:
   db_data_volume: {}
-  orient_data_volume: {}
+  # orient_data_volume: {}
+  neo4j_data: {}
+  neo4j_logs: {}
+  neo4j_import: {}
+  neo4j_plugins: {}
