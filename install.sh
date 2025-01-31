@@ -244,4 +244,4 @@ runtime_generation
 echo "Installation completed!"
 echo "To start the application, run: ./run-impact.sh"
 echo "The dashboard should be accessible at ${PROTOCOL}://${IP}:3000"
-echo "To analyze local repositories set, in the dashboard, the local path to /repo/<folder name>"
+echo "To analyze local repositories set, in the dashboard, the local path to /repos/<folder name>"
