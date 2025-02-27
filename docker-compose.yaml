@@ -127,6 +127,7 @@ services:
       - ${ENV_FILE}
     volumes:
       - ${PREDICTION_APP_VOLUME}
+      - models_volume:${MODELS_VOLUME:-/models}
 
   dashboard:
     pull_policy: always
@@ -148,7 +149,6 @@ services:
       retries: 5
 
   miner-api:
-    user: ${MY_UID:-1000}:${MY_GID:-1000}
     pull_policy: always
     container_name: ${MINER_API_CONTAINER_NAME}
     labels:
@@ -164,7 +164,6 @@ services:
       - ${USER_VOLUME}:${REPOSITORY_VOLUME}
 
   miner-scheduler:
-    user: ${MY_UID:-1000}:${MY_GID:-1000}
     pull_policy: always
     container_name: ${MINER_SCHEDULER_CONTAINER_NAME}
     labels:
@@ -176,6 +175,7 @@ services:
     depends_on: ['core', 'neo4j']
     volumes:
       - ${USER_VOLUME}:${REPOSITORY_VOLUME}
+      - ./.miner.gitconfig:/root/.gitconfig
 
 networks:
   impact-analysis:
@@ -183,6 +183,7 @@ networks:
 
 volumes:
   db_data_volume: {}
+  models_volume: {}
   # orient_data_volume: {}
   neo4j_data: {}
   neo4j_logs: {}

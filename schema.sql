@@ -175,8 +175,9 @@ create table if not exists public.analysis_run_header (
     creation_date timestamp default now(),
     created_by bigint not null constraint fk_user_id references public.impact_user on delete cascade,
     project_id bigint not null constraint fk_project_id references public.project on delete cascade,
-    status varchar
-);
+    error         boolean   default false                         not null,
+    analysis_type varchar   default 'df_preds'::character varying not null
+    );
 
 create table public.trained_model (
     id bigserial primary key,
@@ -248,6 +249,20 @@ create table if not exists public.datasets_v1 (
     windex integer not null constraint datasets_v1_windex_check check (windex > 0),
     recency integer constraint datasets_v1_recency_check check (recency > 0),
     author text not null
+
+);
+create table if not exists public.datasets_v2 (
+    id serial primary key,
+    -- To use timescale primary key must be removed, at the moment doing so break the training step
+    f1 text not null,
+    f2 text not null,
+    is_cochange integer not null constraint datasets_v2_is_cochange_check check (is_cochange = ANY (ARRAY [0, 1])),
+    project_id text not null references public.repo_miners (project_id),
+    windex integer not null constraint datasets_v2_windex_check check (windex >= 0),
+    recency integer constraint datasets_v2_recency_check check (recency >= 0),
+    author text not null,
+    child_when TIMESTAMP NOT NULL,
+    child_sha text not null
 );
 
 create table if not exists public.shared_states (
@@ -262,17 +277,31 @@ create table if not exists public.analysis_run_detail (
     status varchar not null,
     start_date timestamp,
     end_date timestamp,
-    header bigint not null constraint analysis_run_header___fk references public.analysis_run_header
+    header bigint not null constraint analysis_run_header___fk references public.analysis_run_header,
+    options    jsonb
 );
 
 CREATE TABLE diffs_v1 (
-    parent_sha CHAR(40) NOT NULL,
-    child_sha CHAR(40) NOT NULL,
+    id serial primary key,
+    project_id text not null, --references public.repo_miners (project_id),
+    parent_sha TEXT NOT NULL,
+    child_sha TEXT NOT NULL,
     old_file TEXT NOT NULL,
     new_file TEXT NOT NULL,
     old_lines INTEGER NOT NULL,
     new_lines INTEGER NOT NULL,
-    old_author VARCHAR(255) NOT NULL,
-    new_author VARCHAR(255) NOT NULL,
+    old_author TEXT NOT NULL,
+    new_author TEXT NOT NULL,
     "when" TIMESTAMP NOT NULL
 );
+
+-- SELECT create_hypertable('public.datasets_v1', 'windex', chunk_time_interval => 1);
+INSERT INTO
+    public.impact_user (id, username, password, email)
+VALUES
+    (
+        1,
+        'dev',
+        '$2a$10$D3HgetPAUcKQosjmeP8C3OsvV65xVwgZEYlj6JmMmsz.Do.1uiC3q',
+        ''
+    );
