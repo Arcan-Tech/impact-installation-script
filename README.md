@@ -1,40 +1,22 @@
-# impact-installation-script
+# Installation script for Impact Analysis
 
-Installation script for the impact analysis
+Installation script for the impact analysis. See system requirements at the end of this document.
 
-## Linux
+## 1. Download (Linux/MacOS only)
 
-Arcan Impact Analysis installation script for Linux
-
-### With `wget`
+Arcan Impact Analysis installation script for Linux or MacOS
+With `wget`
 
 ```bash
 wget -q https://raw.githubusercontent.com/Arcan-Tech/impact-installation-script/refs/heads/master/install.sh && chmod +x ./install.sh && ./install.sh
 ```
-
-### With `curl`
+or with `curl`
 
 ```bash
 curl -O -s https://raw.githubusercontent.com/Arcan-Tech/impact-installation-script/refs/heads/master/install.sh && chmod +x ./install.sh && ./install.sh
 ```
 
-## On Windows (Git-Bash)
-
-Arcan Impact Analysis installation script for Windows
-
-```bash
-TODO
-```
-
-# Requirements
-
-- Bash & wget (installation)
-- Running Docker Engine >20.10
-- At least 4 CPU cores (preferably 6+)
-- At least 16GB of RAM
-- At least 30 GB of disk space for images and space for analyses
-
-# Installation
+## 2. Installation
 
 To start the installation run the `./install.sh` script, the script will guide you through.
 
@@ -43,7 +25,7 @@ This will generate a configuration file that will be used by run-impact.sh witho
 
 The next prompt will ask you to configure the impact analysis
 
-## Configuration
+## 3. Configuration
 
 At the current state the express option it is the fastest option to install and serve the tool locally with the latest stable version. It will serve the application over HTTP, enables the auto updater and use the directory "./repos" for local analyses
 
@@ -59,21 +41,18 @@ The custom option will prompt with the following settings:
 
 Before completing the configuration you will be showed a summary and you will be asked to confirm, if you choose to not confirm the configuration step will start over
 
-## Launch the tool
+## 4. Launch the tool
 
-Once the installation is completed you should see a message saying so and the address where you can access the tool. It should be < protocol you set >://< IP you set >:3000, e.g. http://192.168.1.8:3000 or in the cose of express installation http://localhost:3000
+Once the installation is completed you should see a message saying so and the address where you can access the tool. It should be < protocol you set >://< IP you set >:3000, e.g. http://192.168.1.8:3000 or in the cose of express installation http://localhost:3000.
+You can launch the tool with `./run-impact.sh`, once all the containers have launched you can access the tool
 
-you can launch the tool with `./run-impact.sh`, once all the containers have launched you can access the tool
-
-## Use the tool
-
-### **First-Time Setup**
+## 5. First setup
 
 - When you first launch the tool, no users will exist. You must create a user account.
 - User accounts are only used to associate projects and repositories.
   > **Note:** Password recovery is not implemented, so keep your credentials secure. The user is limited to the running instance
 
-### Local analysis
+#### Adding a local repo
 
 To perform a local analysis:
 
@@ -85,10 +64,10 @@ To perform a local analysis:
    > If your repository is named `my-repo`, clone it into the `./repos` directory:  
    > `git clone https://github.com/user/my-repo ./repos/my-repo`.
 3. Ensure the branches to analyzed have been fetched, add those you wish to analyze
-4. When telling the dashboard where to find the repository, use `/repos/<my-repo` (NOTE: the absence of the dot at the beginning).
+4. When telling the dashboard where to find the repository, use `/repos/<my-repo>` (**NOTE**: the absence of the dot at the beginning).
 
-### Remote analysis
-
+#### Adding a remote repo
+**ONLY** public repositories are supported at the moment!
 1. Add a repository:
    - Select the **Remote** option.
    - Enter the repository URL (e.g., `https://github.com/user/repository`) on the input below.
@@ -96,11 +75,16 @@ To perform a local analysis:
 
 Private repositories must be analyzed locally due to access restrictions.
 
-### Analysis
+## 6. Training the model
 
 After creating at least one repository in a project you will be able to perform an analysis by clicking the button "Request new analysis", most of the field will be already filled. If you added more than 1 branch in any of the repositories you will have to select it
 
-### ** Other Notes**
+# Requirements
 
-- Docker must be installed and running before starting the installation.
-- HTTPS requires valid certificates to function correctly.
+- Bash & wget (installation)
+- Running Docker Engine >20.10
+- At least 4 CPU cores (preferably 6+)
+- At least 16GB of RAM
+- At least 30 GB of disk space for images and space for analyses
+- if you chose HTTPS, valid certificates are necessary.
+
