@@ -1,4 +1,4 @@
-# Installation script for Impact Analysis
+# Installation instructions for Impact Analysis
 
 Installation script for the impact analysis. See system requirements at the end of this document.
 
