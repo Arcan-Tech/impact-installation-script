@@ -76,7 +76,7 @@ After creating at least one repository in a project you will be able to perform 
 
 ## Windows
 Follow these steps:
-- Download this repository (green button "**Code**" and then "Download as Zip"). Extract all contents and open the directory.
+- Download this repository (green button "*Code*" and then "Download ZIP"). Extract all contents and open the directory.
 - Make a copy of `.base.env` and call it `.env`
 - Create the file `docker-conf/config.json` and copy the following content in it:
 ```json
