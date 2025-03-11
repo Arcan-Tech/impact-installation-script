@@ -213,6 +213,9 @@ replace_passwords_in_env() {
     done <"$env_file"
 }
 
+ensure_user_volume_exists() {
+    mkdir -p $USER_VOLUME
+}
 
 ### Installation workflow
 
@@ -238,6 +241,7 @@ fi
 configure_installation
 download_files
 env_generation
+ensure_user_volume_exists
 replace_passwords_in_env
 runtime_generation
 
