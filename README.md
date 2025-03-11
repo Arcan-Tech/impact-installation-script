@@ -4,16 +4,10 @@ Installation script for the impact analysis. See system requirements at the end 
 
 ## 1. Download (Linux/MacOS only)
 
-Arcan Impact Analysis installation script for Linux or MacOS
-With `wget`
+Arcan Impact Analysis installation script for Linux or MacOS. You need `wget`, `sed` and `base64` installed on your system. 
 
 ```bash
 wget -q https://raw.githubusercontent.com/Arcan-Tech/impact-installation-script/refs/heads/master/install.sh && chmod +x ./install.sh && ./install.sh
-```
-or with `curl`
-
-```bash
-curl -O -s https://raw.githubusercontent.com/Arcan-Tech/impact-installation-script/refs/heads/master/install.sh && chmod +x ./install.sh && ./install.sh
 ```
 
 ## 2. Installation
