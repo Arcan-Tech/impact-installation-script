@@ -184,6 +184,7 @@ download_files() {
         echo "Error: Failed to download $FILE_RUN"
         return 1
     fi
+    chmod +x $FILE_RUN
 
     wget -q "${REPO_URL}/${FILE_INIT_NEO4J}" -O "${OUTPUT_DIR}/$(basename "$FILE_INIT_NEO4J")"
     if [[ $? -ne 0 ]]; then
