@@ -57,6 +57,13 @@ Follow these steps:
 }
 ```
 - Replace `TOKEN` with the token provided to you by our team.
+- Create the file `runtime-config.js` and paste the following contents:
+```js
+window.runConfig = {
+  apiBaseUrl: 'http://localhost:8080/api',
+  socketUrl: 'http://localhost:9092/'
+}
+```
 - Run the following
 ```bash
 docker --config .\docker-conf compose up 
