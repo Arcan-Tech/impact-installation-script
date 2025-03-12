@@ -11,6 +11,13 @@ echo -e "
              /_/                                           /____/       
 ####              
 "
+sed_wrap() {
+  if sed --version 2>/dev/null | grep -q "GNU sed"; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
 
 # Function to check if Docker is installed and running
 check_docker() {
@@ -113,21 +120,21 @@ env_generation() {
 
     cp "$BASE_ENV_FILE" "$ENV_FILE"
 
-    sed -i "s/^CORE_TAG=.*/CORE_TAG=${VERSION}/" "$ENV_FILE"
-    sed -i "s/^PREDICTION_TAG=.*/PREDICTION_TAG=${VERSION}/" "$ENV_FILE"
-    sed -i "s/^MINER_SCHEDULER_TAG=.*/MINER_SCHEDULER_TAG=${VERSION}/" "$ENV_FILE"
-    sed -i "s/^MINER_API_TAG=.*/MINER_API_TAG=${VERSION}/" "$ENV_FILE"
-    sed -i "s/^DASHBOARD_TAG=.*/DASHBOARD_TAG=${VERSION}/" "$ENV_FILE"
-    sed -i "s|^USER_VOLUME=.*|USER_VOLUME=${USER_VOLUME}|" "$ENV_FILE"
+    sed_wrap "s/^CORE_TAG=.*/CORE_TAG=${VERSION}/" "$ENV_FILE"
+    sed_wrap "s/^PREDICTION_TAG=.*/PREDICTION_TAG=${VERSION}/" "$ENV_FILE"
+    sed_wrap "s/^MINER_SCHEDULER_TAG=.*/MINER_SCHEDULER_TAG=${VERSION}/" "$ENV_FILE"
+    sed_wrap "s/^MINER_API_TAG=.*/MINER_API_TAG=${VERSION}/" "$ENV_FILE"
+    sed_wrap "s/^DASHBOARD_TAG=.*/DASHBOARD_TAG=${VERSION}/" "$ENV_FILE"
+    sed_wrap "s|^USER_VOLUME=.*|USER_VOLUME=${USER_VOLUME}|" "$ENV_FILE"
     if $WATCHTOWER; then
-        sed -i "s/^ENABLE_WATCHTOWER=.*/ENABLE_WATCHTOWER=1/" "$ENV_FILE"
+        sed_wrap "s/^ENABLE_WATCHTOWER=.*/ENABLE_WATCHTOWER=1/" "$ENV_FILE"
     else
-        sed -i "s/^ENABLE_WATCHTOWER=.*/ENABLE_WATCHTOWER=0/" "$ENV_FILE"
+        sed_wrap "s/^ENABLE_WATCHTOWER=.*/ENABLE_WATCHTOWER=0/" "$ENV_FILE"
     fi
     if [[ "$PROTOCOL" != "https" ]]; then
-        sed -i "s/^CORE_AUTHCOOKIE_SECURE=.*/CORE_AUTHCOOKIE_SECURE=false/" "$ENV_FILE"
+        sed_wrap "s/^CORE_AUTHCOOKIE_SECURE=.*/CORE_AUTHCOOKIE_SECURE=false/" "$ENV_FILE"
     else
-        sed -i "s/^CORE_AUTHCOOKIE_SECURE=.*/CORE_AUTHCOOKIE_SECURE=true/" "$ENV_FILE"
+        sed_wrap "s/^CORE_AUTHCOOKIE_SECURE=.*/CORE_AUTHCOOKIE_SECURE=true/" "$ENV_FILE"
     fi
 
 }
@@ -208,7 +215,7 @@ replace_passwords_in_env() {
         if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*PASSWORD= ]]; then
             var_name=$(echo "$line" | cut -d '=' -f 1)
             new_value=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
-            sed -i "s|^$var_name=.*|$var_name=$new_value|" "$env_file"
+            sed_wrap "s|^$var_name=.*|$var_name=$new_value|" "$env_file"
         fi
     done <"$env_file"
 }
