@@ -2,8 +2,8 @@
 
 Installation script for the impact analysis. See system requirements at the end of this document.
 
-## Linux and MacOS
-### 1. Download (Linux/MacOS only)
+## Linux/MacOS
+### 1. Download
 
 Arcan Impact Analysis installation script for Linux or MacOS. You need `wget`, `sed` and `base64` installed on your system. 
 
@@ -41,6 +41,33 @@ Before completing the configuration you will be showed a summary and you will be
 Once the installation is completed you should see a message saying so and the address where you can access the tool. It should be < protocol you set >://< IP you set >:3000, e.g. http://192.168.1.8:3000 or in the cose of express installation http://localhost:3000.
 You can launch the tool with `./run-impact.sh`, once all the containers have launched you can access the tool
 
+## Windows
+Follow these steps:
+- Download this repository (green button "*Code*" and then "Download ZIP"). Extract all contents and open the directory.
+- Make a copy of `.base.env` and call it `.env`
+- Create a directory called `repos`
+- Create the file `docker-conf/config.json` and copy the following content in it:
+```json
+{
+    "auths": {
+        "ghcr.io": {
+            "auth": "TOKEN"
+        }
+    }
+}
+```
+- Replace `TOKEN` with the token provided to you by our team.
+- Run the following
+```bash
+docker --config .\docker-conf compose up 
+```
+- You can now visit [http://localhost:3000](http://localhost:3000), which will open the dashboard.
+- To uninstall, run the following
+```bash
+docker compose down -v
+```
+
+## Usage
 ### 5. First setup
 
 - When you first launch the tool, no users will exist. You must create a user account.
@@ -48,7 +75,6 @@ You can launch the tool with `./run-impact.sh`, once all the containers have lau
   > **Note:** Password recovery is not implemented, so keep your credentials secure. The user is limited to the running instance
 
 ##### Adding a local repo
-
 To perform a local analysis:
 
 1. Add a repository:
@@ -74,30 +100,6 @@ Private repositories must be analyzed locally due to access restrictions.
 
 After creating at least one repository in a project you will be able to perform an analysis by clicking the button "Request new analysis", most of the field will be already filled. If you added more than 1 branch in any of the repositories you will have to select it
 
-## Windows
-Follow these steps:
-- Download this repository (green button "**Code**" and then "Download as Zip"). Extract all contents and open the directory.
-- Make a copy of `.base.env` and call it `.env`
-- Create the file `docker-conf/config.json` and copy the following content in it:
-```json
-{
-    "auths": {
-        "ghcr.io": {
-            "auth": "TOKEN"
-        }
-    }
-}
-```
-- Replace `TOKEN` with the token provided to you by our team.
-- Run the following
-```bash
-docker --config .\docker-conf compose up 
-```
-- You can now visit [http://localhost:3000](http://localhost:3000), which will open the dashboard.
-- To uninstall, run the following
-```bash
-docker compose down -v
-```
 
 # Requirements
 
