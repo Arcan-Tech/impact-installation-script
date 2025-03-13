@@ -215,7 +215,7 @@ replace_passwords_in_env() {
     while IFS= read -r line; do
         if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*PASSWORD= ]]; then
             var_name=$(echo "$line" | cut -d '=' -f 1)
-            new_value=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+            new_value=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
             sed_wrap "s|^$var_name=.*|$var_name=$new_value|" "$env_file"
         fi
     done <"$env_file"
