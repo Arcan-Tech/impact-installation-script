@@ -97,6 +97,7 @@ services:
     depends_on: ['nats', 'postgres']
     restart: always
     container_name: ${CORE_CONTAINER_NAME}
+    platform: linux/amd64
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
     ports:
@@ -118,6 +119,7 @@ services:
     networks: ['impact-analysis']
     depends_on: ['nats', 'postgres']
     container_name: ${PREDICTION_CONTAINER_NAME}
+    platform: linux/amd64
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
     restart: always
@@ -133,6 +135,7 @@ services:
     pull_policy: always
     image: ${DASHBOARD_IMAGE}:${DASHBOARD_TAG}
     container_name: dashboard
+    platform: linux/amd64
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
     volumes:
@@ -151,6 +154,7 @@ services:
   miner-api:
     pull_policy: always
     container_name: ${MINER_API_CONTAINER_NAME}
+    platform: linux/amd64
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
     image: ${MINER_API_IMAGE}:${MINER_API_TAG}
@@ -166,6 +170,7 @@ services:
   miner-scheduler:
     pull_policy: always
     container_name: ${MINER_SCHEDULER_CONTAINER_NAME}
+    platform: linux/amd64
     labels:
       - 'com.centurylinklabs.watchtower.enable=true'
     image: ${MINER_SCHEDULER_IMAGE}:${MINER_SCHEDULER_TAG}
