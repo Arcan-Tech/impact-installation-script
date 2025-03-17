@@ -292,6 +292,7 @@ CREATE TABLE diffs_v1 (
     new_lines INTEGER NOT NULL,
     old_author TEXT NOT NULL,
     new_author TEXT NOT NULL,
+    kind VARCHAR(10) NOT NULL,
     "when" TIMESTAMP NOT NULL
 );
 

@@ -159,6 +159,7 @@ services:
 
   miner-api:
     pull_policy: always
+    user: ${MY_UID}:${MY_GID}
     container_name: ${MINER_API_CONTAINER_NAME}
     platform: linux/amd64
     labels:
@@ -175,6 +176,7 @@ services:
 
   miner-scheduler:
     pull_policy: always
+    user: ${MY_UID}:${MY_GID}
     container_name: ${MINER_SCHEDULER_CONTAINER_NAME}
     platform: linux/amd64
     labels:
