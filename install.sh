@@ -155,9 +155,6 @@ download_files() {
     FILE_SCHEMA="schema.sql"
     FILE_RUN="run-impact.sh"
 
-    FILE_INIT_NEO4J="init.cypher"
-    FILE_SAMPLE_NEO4J="sample.cypher"
-
     OUTPUT_DIR="."
 
     echo "Fetching required files"
@@ -185,18 +182,6 @@ download_files() {
         return 1
     fi
     chmod +x $FILE_RUN
-
-    wget -q "${REPO_URL}/${FILE_INIT_NEO4J}" -O "${OUTPUT_DIR}/$(basename "$FILE_INIT_NEO4J")"
-    if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to download $FILE_INIT_NEO4J"
-        return 1
-    fi
-
-    wget -q "${REPO_URL}/${FILE_SAMPLE_NEO4J}" -O "${OUTPUT_DIR}/$(basename "$FILE_SAMPLE_NEO4J")"
-    if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to download $FILE_SAMPLE_NEO4J"
-        return 1
-    fi
 }
 
 replace_passwords_in_env() {
