@@ -84,7 +84,7 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./config.json:/config.json
+      - ./docker-conf/config.json:/config.json
     command: ['--interval', '7200', '--cleanup', '--label-enable']
     deploy:
       replicas: ${ENABLE_WATCHTOWER}
